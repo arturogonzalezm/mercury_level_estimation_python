@@ -19,9 +19,10 @@ class LinearInterpolationStrategy(EstimationStrategy):
     """
 
     def estimate(self, mercury_levels, missing_indices):
-        """
-        Fills in missing mercury levels using linear interpolation.
-        """
+        # Debugging: Log the types of items in mercury_levels
+        item_types = [type(item) for item in mercury_levels]
+        logging.debug(f"Mercury levels types: {item_types}")
+
         if not all(isinstance(x, (float, type(None))) for x in mercury_levels):
             logging.error("Mercury levels list contains non-float and non-None types.")
             raise ValueError("Mercury levels must be a list of floats or None.")

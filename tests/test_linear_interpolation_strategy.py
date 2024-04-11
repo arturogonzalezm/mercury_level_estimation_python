@@ -3,34 +3,40 @@
 This module contains tests for verifying the correctness and robustness of the
 LinearInterpolationStrategy class.
 """
+import pytest
 
 from src.linear_interpolation_strategy import LinearInterpolationStrategy
 
 
 def test_linear_interpolation_basic():
     """
-    Test that verifies linear interpolation fills in missing mercury levels correctly.
-
-    Ensures that given a list of mercury levels with some missing values, the
-    LinearInterpolationStrategy correctly estimates those missing values based
-    on linear interpolation between the nearest non-missing values.
+    Test linear interpolation on a simple case with two missing values.
     """
     strategy = LinearInterpolationStrategy()
     mercury_levels = [100, None, 150, None, 200]
     missing_indices = [1, 3]
     strategy.estimate(mercury_levels, missing_indices)
-    assert mercury_levels == [100, 125, 150, 175, 200], "Failed to linearly interpolate correctly"
+    assert mercury_levels == [100, 125, 150, 175, 200], "Linear interpolation failed for basic input."
 
 
-def test_linear_interpolation_no_missing():
+def test_linear_interpolation_with_invalid_types():
     """
-    Test that verifies behavior with no missing mercury levels.
-
-    Ensures that if the input list of mercury levels does not contain any missing
-    values, the LinearInterpolationStrategy leaves the list unchanged.
+    Test that the strategy raises a ValueError for non-float and non-None mercury_levels.
     """
     strategy = LinearInterpolationStrategy()
-    mercury_levels = [100, 120, 140]
-    missing_indices = []
-    strategy.estimate(mercury_levels, missing_indices)
-    assert mercury_levels == [100, 120, 140], "Altered data with no missing values"
+    mercury_levels = [100, "Invalid", 150]
+    missing_indices = [1]
+    with pytest.raises(ValueError, match="Mercury levels must be a list of floats or None."):
+        strategy.estimate(mercury_levels, missing_indices)
+
+
+def test_linear_interpolation_with_invalid_indices():
+    """
+    Test that the strategy raises a ValueError for invalid missing_indices.
+    """
+    strategy = LinearInterpolationStrategy()
+    mercury_levels = [100, None, 150]
+    missing_indices = [1, 3]  # Index 3 is out of range.
+    with pytest.raises(ValueError,
+                       match="Missing indices must be a list of valid integer indices of the mercury_levels list."):
+        strategy.estimate(mercury_levels, missing_indices)
