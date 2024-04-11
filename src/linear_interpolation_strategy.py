@@ -10,17 +10,21 @@ class LinearInterpolationStrategy(EstimationStrategy):
     """
     Implements estimation of missing mercury levels using linear interpolation.
     """
-
-    def validate_mercury_levels(self, mercury_levels):
+    @staticmethod
+    def validate_mercury_levels(mercury_levels):
         """
-        Validates that all items in mercury_levels are either floats or None.
-        Raises a ValueError if the validation fails.
+        Validates that all items in mercury_levels are either None or floats.
+        :param mercury_levels: List[float | None], the list of known and missing mercury levels,
+        where missing levels are denoted by None.
+        :return: None
         """
-        if not all(isinstance(x, (float, type(None))) for x in mercury_levels):
-            logger.error("Mercury levels list contains non-float and non-None types.")
+        invalid_types = [type(x) for x in mercury_levels if not isinstance(x, (float, type(None)))]
+        if invalid_types:
+            logger.error(f"Mercury levels list contains invalid types: {invalid_types}")
             raise ValueError("Mercury levels must be a list of floats or None.")
 
-    def validate_missing_indices(self, mercury_levels, missing_indices):
+    @staticmethod
+    def validate_missing_indices(mercury_levels, missing_indices):
         """
         Validates that all items in missing_indices are valid integer indices
         within the bounds of the mercury_levels list.
