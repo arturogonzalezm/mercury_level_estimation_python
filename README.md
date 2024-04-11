@@ -1,4 +1,4 @@
-[![codecov](https://codecov.io/gh/arturogonzalezm/mercury_level_estimation_python/graph/badge.svg?token=N7VZAG3QJP)](https://codecov.io/gh/arturogonzalezm/mercury_level_estimation_python)
+[![codecov](https://codecov.io/gh/arturogonzalezm/mercury_level_estimation_python/graph/badge.svg?token=IDC8VIX4NB)](https://codecov.io/gh/arturogonzalezm/mercury_level_estimation_python)
 [![License: MIT](https://img.shields.io/badge/License-MIT-purple.svg)](https://github.com/arturogonzalezm/mercury_level_estimation_python/blob/master/LICENSE)
 [![Read the Docs](https://img.shields.io/readthedocs/:packageName)](https://github.com/arturogonzalezm/mercury_level_estimation_python/wiki)
 [![PyLint](https://github.com/arturogonzalezm/mercury_level_estimation_python/actions/workflows/workflow.yml/badge.svg)](https://github.com/arturogonzalezm/mercury_level_estimation_python/actions/workflows/workflow.yml)
