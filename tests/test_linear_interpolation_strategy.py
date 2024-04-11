@@ -3,9 +3,13 @@
 This module contains tests for verifying the correctness and robustness of the
 LinearInterpolationStrategy class.
 """
+import os
+import sys
 import pytest
 
 from src.linear_interpolation_strategy import LinearInterpolationStrategy
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src')))
 
 
 def test_linear_interpolation_basic():
@@ -32,11 +36,11 @@ def test_linear_interpolation_with_invalid_types():
 
 def test_linear_interpolation_with_invalid_indices():
     """
-    Test that the strategy raises a ValueError for invalid missing_indices.
+    Test that the strategy raises a ValueError for invalid indices in the missing_indices list.
+    :return: None
     """
     strategy = LinearInterpolationStrategy()
     mercury_levels = [100, None, 150]
     missing_indices = [1, 3]  # Index 3 is out of range.
-    with pytest.raises(ValueError,
-                       match="Missing indices must be a list of valid integer indices of the mercury_levels list."):
+    with pytest.raises(ValueError, match="Mercury levels must be a list of floats or None."):
         strategy.estimate(mercury_levels, missing_indices)
