@@ -1,11 +1,3 @@
-"""Module docstring: Implements LinearInterpolationStrategy for estimating missing values.
-
-This module provides an implementation of the EstimationStrategy abstract base class,
-using linear interpolation to estimate and fill in missing mercury levels in a series
-of environmental readings.
-"""
-
-
 import logging
 
 from src.estimation_strategy import EstimationStrategy  # Adjust the import path as necessary
@@ -19,20 +11,38 @@ class LinearInterpolationStrategy(EstimationStrategy):
     Implements estimation of missing mercury levels using linear interpolation.
     """
 
-    def estimate(self, mercury_levels, missing_indices):
-        # Debugging: Log the types of items in mercury_levels
-        item_types = [type(item) for item in mercury_levels]
-        logging.debug(f"Mercury levels types: {item_types}")
-
+    def validate_mercury_levels(self, mercury_levels):
+        """
+        Validates that all items in mercury_levels are either floats or None.
+        Raises a ValueError if the validation fails.
+        """
         if not all(isinstance(x, (float, type(None))) for x in mercury_levels):
-            logging.error("Mercury levels list contains non-float and non-None types.")
+            logger.error("Mercury levels list contains non-float and non-None types.")
             raise ValueError("Mercury levels must be a list of floats or None.")
 
+    def validate_missing_indices(self, mercury_levels, missing_indices):
+        """
+        Validates that all items in missing_indices are valid integer indices
+        within the bounds of the mercury_levels list.
+        Raises a ValueError if the validation fails.
+        """
         if not all(isinstance(x, int) for x in missing_indices) or any(
                 x >= len(mercury_levels) for x in missing_indices):
-            logging.error("Invalid indices in the missing_indices list.")
+            logger.error("Invalid indices in the missing_indices list.")
             raise ValueError("Missing indices must be a list of valid integer indices of the mercury_levels list.")
 
+    def estimate(self, mercury_levels, missing_indices):
+        """
+        Estimates missing mercury levels using linear interpolation.
+
+        First, it validates the input arguments using the dedicated validation methods.
+        Then, it proceeds with the interpolation logic if the validation passes.
+        """
+        # Perform validation checks
+        self.validate_missing_indices(mercury_levels, missing_indices)
+        self.validate_mercury_levels(mercury_levels)
+
+        # Estimation logic
         try:
             for i in missing_indices:
                 before = after = None
@@ -44,6 +54,8 @@ class LinearInterpolationStrategy(EstimationStrategy):
                     if mercury_levels[k] is not None:
                         after = mercury_levels[k]
                         break
+
+                # Interpolation calculation
                 if before is not None and after is not None:
                     mercury_levels[i] = (before + after) / 2
                 elif before is not None:
@@ -51,13 +63,13 @@ class LinearInterpolationStrategy(EstimationStrategy):
                 elif after is not None:
                     mercury_levels[i] = after
                 else:
-                    mercury_levels[i] = 0  # Log a warning about missing surrounding values
-                    logging.warning(f"No surrounding non-missing values for index {i}; defaulted to 0.")
+                    mercury_levels[i] = 0  # Default to 0 if no surrounding non-missing values
+                    logger.warning(f"No surrounding non-missing values for index {i}; defaulted to 0.")
 
             for i in missing_indices:
                 logging.info(f"{mercury_levels[i]:.2f}")
 
-            logging.info("Missing mercury levels estimated successfully.")
+            logger.info("Missing mercury levels estimated successfully.")
         except Exception as e:
-            logging.error(f"An error occurred during estimation: {str(e)}")
+            logger.error(f"An error occurred during estimation: {str(e)}")
             raise
